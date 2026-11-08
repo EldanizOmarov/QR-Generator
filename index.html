@@ -297,7 +297,7 @@ const L = {
   footer:'QR Studio — pulsuz və açıq QR kod generatoru. Bütün emal brauzerində gedir, heç bir məlumat serverə göndərilmir.',
   footer2:'QR Code — DENSO WAVE şirkətinin qeydiyyatlı ticarət nişanıdır.',
   copied:'Şəkil kopyalandı',copyErr:'Kopyalamaq alınmadı — «PNG endir» işlət',empty:'Əvvəlcə link və ya mətn yaz',
-  cWifi:'Wi-Fi',cUrl:'Sayt',cMail:'E-poçt',cTel:'Telefon',cText:'Mətn'},
+  cWifi:'Wi-Fi',cUrl:'Sayt',cMail:'E-poçt',cTel:'Telefon',cText:'Mətn',tplUrl:'https://',tplWifi:'WIFI:T:WPA;S:ŞƏBƏKƏ_ADI;P:PAROL;;',tplMail:'mailto:ad@example.com',tplTel:'tel:+994',tplText:''},
  en:{tag:'Free QR code — with logo',h1a:'Turn your link into a',h1b:'QR code',h1end:'',
   sub:'Type a link or text, pick colors and a logo, download in high quality. No sign-up, no limits.',
   bFree:'100% free',bNo:'No sign-up',bLogo:'Logo support',
@@ -312,7 +312,7 @@ const L = {
   footer:'QR Studio — a free, open QR code generator. Everything runs in your browser; no data is sent to any server.',
   footer2:'QR Code is a registered trademark of DENSO WAVE Incorporated.',
   copied:'Image copied',copyErr:'Copy failed — use «Download PNG»',empty:'Type a link or text first',
-  cWifi:'Wi-Fi',cUrl:'Website',cMail:'Email',cTel:'Phone',cText:'Text'},
+  cWifi:'Wi-Fi',cUrl:'Website',cMail:'Email',cTel:'Phone',cText:'Text',tplUrl:'https://',tplWifi:'WIFI:T:WPA;S:NETWORK_NAME;P:PASSWORD;;',tplMail:'mailto:name@example.com',tplTel:'tel:+1',tplText:''},
  tr:{tag:'Ücretsiz QR kod — logolu',h1a:'Bağlantını',h1b:'QR koda',h1end:'çevir',
   sub:'Bir bağlantı veya metin yaz, renk ve logo seç, yüksek kalitede indir. Kayıt yok, limit yok.',
   bFree:'%100 ücretsiz',bNo:'Kayıt yok',bLogo:'Logo desteği',
@@ -327,7 +327,7 @@ const L = {
   footer:'QR Studio — ücretsiz ve açık bir QR kod oluşturucu. Her şey tarayıcında çalışır; hiçbir veri sunucuya gönderilmez.',
   footer2:'QR Code, DENSO WAVE Incorporated’ın tescilli ticari markasıdır.',
   copied:'Görsel kopyalandı',copyErr:'Kopyalama başarısız — «PNG indir» kullan',empty:'Önce bir bağlantı veya metin yaz',
-  cWifi:'Wi-Fi',cUrl:'Web sitesi',cMail:'E-posta',cTel:'Telefon',cText:'Metin'},
+  cWifi:'Wi-Fi',cUrl:'Web sitesi',cMail:'E-posta',cTel:'Telefon',cText:'Metin',tplUrl:'https://',tplWifi:'WIFI:T:WPA;S:AĞ_ADI;P:ŞİFRE;;',tplMail:'mailto:isim@example.com',tplTel:'tel:+90',tplText:''},
  ru:{tag:'Бесплатный QR-код — с логотипом',h1a:'Преврати ссылку в',h1b:'QR-код',h1end:'',
   sub:'Введите ссылку или текст, выберите цвет и логотип, скачайте в высоком качестве. Без регистрации и лимитов.',
   bFree:'100% бесплатно',bNo:'Без регистрации',bLogo:'Поддержка логотипа',
@@ -342,7 +342,7 @@ const L = {
   footer:'QR Studio — бесплатный открытый генератор QR-кодов. Всё работает в браузере; никакие данные не отправляются на сервер.',
   footer2:'QR Code — зарегистрированный товарный знак DENSO WAVE Incorporated.',
   copied:'Изображение скопировано',copyErr:'Не удалось скопировать — используйте «Скачать PNG»',empty:'Сначала введите ссылку или текст',
-  cWifi:'Wi-Fi',cUrl:'Сайт',cMail:'Эл. почта',cTel:'Телефон',cText:'Текст'}
+  cWifi:'Wi-Fi',cUrl:'Сайт',cMail:'Эл. почта',cTel:'Телефон',cText:'Текст',tplUrl:'https://',tplWifi:'WIFI:T:WPA;S:ИМЯ_СЕТИ;P:ПАРОЛЬ;;',tplMail:'mailto:imya@example.com',tplTel:'tel:+7',tplText:''}
 };
 let LANG = (()=>{ let v; try{v=localStorage.getItem('qr_lang')}catch(e){} if(L[v])return v;
   const n=(navigator.language||'').slice(0,2).toLowerCase();
@@ -371,11 +371,11 @@ const S = { text:'', style:'rounded', fg:'#1a1030', fg2:'#b14dff', bg:'#ffffff',
 
 /* quick templates */
 const TEMPLATES = [
-  ['cUrl','url','https://'],
-  ['cWifi','wifi','WIFI:T:WPA;S:ŞƏBƏKƏ_ADI;P:PAROL;;'],
-  ['cMail','mail','mailto:ad@example.com'],
-  ['cTel','tel','tel:+994'],
-  ['cText','text','']
+  ['cUrl','url','tplUrl'],
+  ['cWifi','wifi','tplWifi'],
+  ['cMail','mail','tplMail'],
+  ['cTel','tel','tplTel'],
+  ['cText','text','tplText']
 ];
 function buildChips(){
   $('#chips').innerHTML = TEMPLATES.map(([k,i])=>`<button class="chip" data-tpl="${i}">${tplIcon(i)}${t(k)}</button>`).join('');
@@ -526,7 +526,7 @@ function update(){ cancelAnimationFrame(rafId); rafId=requestAnimationFrame(()=>
 
 /* ---------------- events ---------------- */
 $('#text').addEventListener('input', e=>{ S.text=e.target.value; $('#cnt').textContent=e.target.value.length; update(); });
-$('#chips').addEventListener('click', e=>{ const b=e.target.closest('[data-tpl]'); if(!b)return; const map={}; TEMPLATES.forEach(([k,i,v])=>map[i]=v); const v=map[b.dataset.tpl]||''; $('#text').value=v; S.text=v; $('#cnt').textContent=v.length; $('#text').focus(); update(); });
+$('#chips').addEventListener('click', e=>{ const b=e.target.closest('[data-tpl]'); if(!b)return; const row=TEMPLATES.find(r=>r[1]===b.dataset.tpl); const v=row?t(row[2]):''; $('#text').value=v; S.text=v; $('#cnt').textContent=v.length; $('#text').focus(); update(); });
 $('#styles').addEventListener('click', e=>{ const b=e.target.closest('.style'); if(!b)return; S.style=b.dataset.s; document.querySelectorAll('.style').forEach(x=>x.classList.toggle('on',x===b)); update(); });
 $('#fg').addEventListener('input',e=>{S.fg=e.target.value; markPreset(); update();});
 $('#fg2').addEventListener('input',e=>{S.fg2=e.target.value; update();});
